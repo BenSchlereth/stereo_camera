@@ -1,0 +1,4 @@
+Höhe der Kamera: 1,15m
+Distanz zwischen beiden aufnahmen: 0,20m
+Abstand der Hüttchen: 2m 4m 6m 8m 10m
+Beleuchtung: Schatten
