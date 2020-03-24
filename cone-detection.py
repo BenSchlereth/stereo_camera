@@ -18,19 +18,27 @@ def canny(image):
     return canny
 
 def colorfilter(image):
+    """filters a color in a picture"""
+    # Converts to HSV Color
+    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+
+    # value for colorfilter
     lower_green = np.array([30,100,0])
     upper_green = np.array([70,255,255])
-    mask = cv2.inRange(image, lower_green, upper_green)
-    res = cv2.bitwise_and(image, image, mask=mask)
-    return res
+
+    mask = cv2.inRange(hsv, lower_green, upper_green)
+    res = cv2.bitwise_and(hsv, hsv, mask=mask)
+
+    # GaussianBlur with (x,x) is the Pixelsize and will determinate the viewing distance
+    blur = cv2.GaussianBlur(res, (5,5), 0)
+    return blur
 
 
 
 image = cv2.imread('Messungen/Messung_1/Gerade_Links.jpg')
 lane_image = np.copy(image)
-hsv = cv2.cvtColor(lane_image, cv2.COLOR_RGB2HSV)
 
-filtered_image = colorfilter(hsv)
+filtered_image = colorfilter(lane_image)
 
 cv2.namedWindow("result",cv2.WINDOW_NORMAL)
 cv2.resizeWindow("result", 600,600)
