@@ -36,7 +36,7 @@ lane_image = np.copy(image)
 filtered_image, converted_image = colorfilter(image)
 img1 = cv2.cvtColor(filtered_image, cv2.COLOR_RGB2GRAY)
 
-#template
+#template not working properly
 img2 = cv2.imread('Messungen/templates/Green-Cone_1.png', cv2.IMREAD_GRAYSCALE) # trainImage
 # Initiate SIFT detector
 sift = cv2.xfeatures2d.SIFT_create()
