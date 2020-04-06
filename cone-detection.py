@@ -2,6 +2,8 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+pixel_horizontal = 5376
+pixel_vertical = 3024
 
 def canny(image):
     """returns only the edges"""
@@ -32,26 +34,29 @@ def colorfilter(image):
 
 
 image = cv2.imread('Messungen/Messung_1/Gerade_Links.jpg')
-template = cv2.imread('Messungen/templates/Green-Cone_2.png')
+template_2m = cv2.imread('Messungen/templates/Green-Cone_2.png')
 lane_image = np.copy(image)
 filtered_image, green_mask = colorfilter(lane_image)
-gray_image = cv2.cvtColor(filtered_image, cv2.COLOR_RGB2GRAY)
-gray_template = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
 
-# Threshold image
-_,im_match = cv2.threshold(gray_image, 128, 255, cv2.THRESH_BINARY)
-_,template_match = cv2.threshold(gray_template, 128, 255, cv2.THRESH_BINARY)
+print(green_mask.shape)
+print(len(image))
 
-d2 = cv2.matchShapes(im_match,template_match,cv2.CONTOURS_MATCH_I2,0)
-print(d2)
+#devide in different views
+cutout = np.zeros((1200,pixel_horizontal,3))
 
-canny_image = canny(filtered_image)
+cutout[:,:,0] = green_mask[   0:1200,:]
+cutout[:,:,1] = green_mask[ 900:2100,:]
+cutout[:,:,2] = green_mask[1824:    ,:]
+print(cutout[:,:,0].shape)
+
+gray_template_2m = cv2.cvtColor(template_2m, cv2.COLOR_RGB2GRAY)
+
 
 cv2.namedWindow("original",cv2.WINDOW_NORMAL)
 cv2.resizeWindow("original", 600,600)
-cv2.imshow("original", lane_image)
+cv2.imshow("original", cutout[:,:,2])
 cv2.namedWindow("result",cv2.WINDOW_NORMAL)
 cv2.resizeWindow("result", 600,600)
-cv2.imshow("result", canny_image)
+cv2.imshow("result", green_mask)
 
 cv2.waitKey(0)
