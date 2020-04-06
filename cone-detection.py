@@ -49,14 +49,21 @@ cutout[:,:,1] = green_mask[ 900:2100,:]
 cutout[:,:,2] = green_mask[1824:    ,:]
 print(cutout[:,:,0].shape)
 
+#extract cones in Messungen/Messung_1/Gerade_Links.jpg
+cone_2m = green_mask[2200:3000,1650:2200]
+cone_4m = green_mask[1400:1800,1850:2200]
+
 gray_template_2m = cv2.cvtColor(template_2m, cv2.COLOR_RGB2GRAY)
 
 
 cv2.namedWindow("original",cv2.WINDOW_NORMAL)
 cv2.resizeWindow("original", 600,600)
-cv2.imshow("original", cutout[:,:,2])
+cv2.imshow("original", green_mask)
+cv2.namedWindow("cutout_3",cv2.WINDOW_NORMAL)
+cv2.resizeWindow("cutout_3", 600,600)
+cv2.imshow("cutout_3", cutout[:,:,2])
 cv2.namedWindow("result",cv2.WINDOW_NORMAL)
 cv2.resizeWindow("result", 600,600)
-cv2.imshow("result", green_mask)
+cv2.imshow("result", cone_4m)
 
 cv2.waitKey(0)
