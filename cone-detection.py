@@ -49,9 +49,18 @@ cutout[:,:,1] = green_mask[ 900:2100,:]
 cutout[:,:,2] = green_mask[1824:    ,:]
 print(cutout[:,:,0].shape)
 
-#extract cones in Messungen/Messung_1/Gerade_Links.jpg
-cone_2m = green_mask[2200:3000,1650:2200]
-cone_4m = green_mask[1400:1800,1850:2200]
+# #extract cones in Messungen/Messung_1/Gerade_Links.jpg
+# cone_2m = green_mask[2200:3000,1650:2200]
+# cone_4m = green_mask[1400:1800,1850:2200]
+# cone_6m = green_mask[1100:1350,1950:2100]
+# cone_8m = green_mask[950:1130,1950:2150]
+# cone_10m = green_mask[850:990,2000:2150]
+#
+# cv2.imwrite("mask_cone_2m.png",cone_2m)
+# cv2.imwrite("mask_cone_4m.png",cone_4m)
+# cv2.imwrite("mask_cone_6m.png",cone_6m)
+# cv2.imwrite("mask_cone_8m.png",cone_8m)
+# cv2.imwrite("mask_cone_10m.png",cone_10m)
 
 gray_template_2m = cv2.cvtColor(template_2m, cv2.COLOR_RGB2GRAY)
 
@@ -64,6 +73,6 @@ cv2.resizeWindow("cutout_3", 600,600)
 cv2.imshow("cutout_3", cutout[:,:,2])
 cv2.namedWindow("result",cv2.WINDOW_NORMAL)
 cv2.resizeWindow("result", 600,600)
-cv2.imshow("result", cone_4m)
+cv2.imshow("result", cone_2m)
 
 cv2.waitKey(0)
