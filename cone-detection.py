@@ -23,14 +23,6 @@ def extracting_cones_16MP(image):
     cv2.imwrite("Messungen/templates/image_cone_10m.png", cone_10m)
 
 
-def canny(image):
-    """returns only the edges"""
-    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    blur = cv2.GaussianBlur(gray, (5, 5), 0)
-    canny = cv2.Canny(blur, 20, 20)
-    return canny
-
-
 def colorfilter(image):
     """filters a color in a picture"""
     # Converts to HSV Color spectrum
@@ -50,8 +42,9 @@ def colorfilter(image):
 
 # Get image
 image = cv2.imread('Messungen/Messung_1/Gerade_Links.jpg')
-filtered_image, green_mask = colorfilter(image)
-filtered_gray = cv2.cvtColor(filtered_image, cv2.COLOR_BGR2GRAY)
+hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+# filtered_image, green_mask = colorfilter(image)
+gray = cv2.cvtColor(hsv, cv2.COLOR_BGR2GRAY)
 
 # Get Templates
 template_2m = cv2.imread('Messungen/templates/image_cone_2m.png', 0)
@@ -62,15 +55,15 @@ template_10m = cv2.imread('Messungen/templates/image_cone_10m.png', 0)
 
 # ORB Detector
 orb = cv2.ORB_create()
-kp1, des1 = orb.detectAndCompute(filtered_gray, None)
+kp1, des1 = orb.detectAndCompute(gray, None)
 kp2, des2 = orb.detectAndCompute(template_2m, None)
 
 # Brute Force Matching
-bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+bf = cv2.BFMatcher(cv2.NORM_HAMMING2, crossCheck=True)
 matches = bf.match(des1, des2)
 matches = sorted(matches, key = lambda x:x.distance)
 
-matching_result = cv2.drawMatches(filtered_gray, kp1, template_2m, kp2, matches[:50], None, flags=2)
+matching_result = cv2.drawMatches(gray, kp1, template_2m, kp2, matches[:50], None, flags=2)
 
 # keypoints_1, descriptors_1 = sift.detectAndCompute(filtered_gray,None)
 
@@ -121,10 +114,11 @@ matching_result = cv2.drawMatches(filtered_gray, kp1, template_2m, kp2, matches[
 # converted_image[2100:,:] = thresh_front[300:,:]
 
 cv2.namedWindow("original", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("original", 600, 600)
-cv2.imshow("original", matching_result)
-# cv2.namedWindow("template",cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("template", 600,600)
-# cv2.imshow("template", template_2m)
+cv2.resizeWindow("original", 1000, 600)
+cv2.imshow("original", gray)
+
+cv2.namedWindow("matching", cv2.WINDOW_NORMAL)
+cv2.resizeWindow("matching", 1000, 600)
+cv2.imshow("matching", matching_result)
 
 cv2.waitKey(0)
