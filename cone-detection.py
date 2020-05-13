@@ -60,71 +60,54 @@ template_6m = cv2.imread('Messungen/templates/image_cone_6m.png', 0)
 template_8m = cv2.imread('Messungen/templates/image_cone_8m.png', 0)
 template_10m = cv2.imread('Messungen/templates/image_cone_10m.png', 0)
 
-# ORB Detector
-orb = cv2.ORB_create()
-kp1, des1 = orb.detectAndCompute(filtered_gray, None)
-kp2, des2 = orb.detectAndCompute(template_2m, None)
+# devide in different views
+back = filtered_gray[0:1200, :]     # backround
+middle = filtered_gray[900:2100, :]
+front = filtered_gray[1800:, :]     # foreground
 
-# Brute Force Matching
-bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-matches = bf.match(des1, des2)
-matches = sorted(matches, key = lambda x:x.distance)
+# Apply template Matching
+res = cv2.matchTemplate(front, template_2m, cv2.TM_CCORR)
+w, h = template_2m.shape[::-1]
+min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+top_left = max_loc
+bottom_right = (top_left[0] + w, top_left[1] + h)
+cv2.rectangle(front, top_left, bottom_right, 255, 2)
 
-matching_result = cv2.drawMatches(filtered_gray, kp1, template_2m, kp2, matches[:50], None, flags=2)
+res = cv2.matchTemplate(middle, template_4m, cv2.TM_CCORR)
+w, h = template_4m.shape[::-1]
+min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+top_left = max_loc
+bottom_right = (top_left[0] + w, top_left[1] + h)
+cv2.rectangle(middle, top_left, bottom_right, 255, 2)
 
-# keypoints_1, descriptors_1 = sift.detectAndCompute(filtered_gray,None)
+res = cv2.matchTemplate(back, template_6m, cv2.TM_CCORR)
+w, h = template_6m.shape[::-1]
+min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+top_left = max_loc
+bottom_right = (top_left[0] + w, top_left[1] + h)
+cv2.rectangle(back, top_left, bottom_right, 255, 2)
 
-# # devide in different views
-# back = filtered_gray[0:1200, :]     # backround
-# middle = filtered_gray[900:2100, :]
-# front = filtered_gray[1800:, :]     # foreground
-#
-# # Apply template Matching
-# res = cv2.matchTemplate(front, template_2m, cv2.TM_CCORR)
-# w, h = template_2m.shape[::-1]
-# min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-# top_left = max_loc
-# bottom_right = (top_left[0] + w, top_left[1] + h)
-# cv2.rectangle(front, top_left, bottom_right, 255, 2)
-#
-# res = cv2.matchTemplate(middle, template_4m, cv2.TM_CCORR)
-# w, h = template_4m.shape[::-1]
-# min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-# top_left = max_loc
-# bottom_right = (top_left[0] + w, top_left[1] + h)
-# cv2.rectangle(middle, top_left, bottom_right, 255, 2)
-#
-# res = cv2.matchTemplate(back, template_6m, cv2.TM_CCORR)
-# w, h = template_6m.shape[::-1]
-# min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-# top_left = max_loc
-# bottom_right = (top_left[0] + w, top_left[1] + h)
-# cv2.rectangle(back, top_left, bottom_right, 255, 2)
-#
-# # to binary image
-# _, thresh_img = cv2.threshold(filtered_gray,75,255,cv2.THRESH_BINARY)
-# _, thresh_back = cv2.threshold(back,75,255,cv2.THRESH_BINARY)
-# _, thresh_middle = cv2.threshold(middle,75,255,cv2.THRESH_BINARY)
-# _, thresh_front = cv2.threshold(front,75,255,cv2.THRESH_BINARY)
-#
-#
-# #Converting image Back
-# converted_image = np.zeros((pixel_vertical,pixel_horizontal))
-# converted_image[0:900,:] = thresh_back[0:900,:]
-# #Overlay between back and middle
-# overlay = cv2.bitwise_or(thresh_back[900:,:],thresh_middle[0:300,:])
-# converted_image[900:1200,:]=overlay
-# converted_image[1200:1800,:] = thresh_middle[300:900,:]
-# #Overlay between middle and back
-# overlay = cv2.add(thresh_middle[900:,:],thresh_front[0:300,:])
-# converted_image[1800:2100,:] = overlay
-# converted_image[2100:,:] = thresh_front[300:,:]
+# to binary image
+_, thresh_img = cv2.threshold(filtered_gray,75,255,cv2.THRESH_BINARY)
+_, thresh_back = cv2.threshold(back,75,255,cv2.THRESH_BINARY)
+_, thresh_middle = cv2.threshold(middle,75,255,cv2.THRESH_BINARY)
+_, thresh_front = cv2.threshold(front,75,255,cv2.THRESH_BINARY)
+
+
+#Converting image Back
+converted_image = np.zeros((pixel_vertical,pixel_horizontal))
+converted_image[0:900,:] = thresh_back[0:900,:]
+#Overlay between back and middle
+overlay = cv2.bitwise_or(thresh_back[900:,:],thresh_middle[0:300,:])
+converted_image[900:1200,:]=overlay
+converted_image[1200:1800,:] = thresh_middle[300:900,:]
+#Overlay between middle and back
+overlay = cv2.add(thresh_middle[900:,:],thresh_front[0:300,:])
+converted_image[1800:2100,:] = overlay
+converted_image[2100:,:] = thresh_front[300:,:]
 
 cv2.namedWindow("original", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("original", 600, 600)
-cv2.imshow("original", matching_result)
-# cv2.namedWindow("template",cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("template", 600,600)
-# cv2.imshow("template", template_2m)
+cv2.imshow("original", converted_image)
 
 cv2.waitKey(0)
