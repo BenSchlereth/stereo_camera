@@ -62,7 +62,7 @@ template_10m = cv2.imread('Messungen/templates/image_cone_10m.png', 0)
 
 # detect contours
 img2, contours, hierarchy = cv2.findContours(green_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-cv2.drawContours(image, contours, -1, (255,0,0), 3)
+cv2.drawContours(image, contours, -1, (255, 0, 0), 3)
 
 # # devide in different views
 # #cutout = np.zeros((1200,pixel_horizontal,3))
@@ -121,8 +121,8 @@ cv2.drawContours(image, contours, -1, (255,0,0), 3)
 # plt.suptitle("matching")
 # plt.show()
 
-# cv2.namedWindow("original", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("original", 1000, 600)
+cv2.namedWindow("original", cv2.WINDOW_NORMAL)
+cv2.resizeWindow("original", 1000, 600)
 cv2.imshow("original", img2)
 cv2.namedWindow("template", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("template", 1000, 600)
