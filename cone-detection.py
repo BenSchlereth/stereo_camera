@@ -1,11 +1,16 @@
 """detects cones in Images"""
 import cv2
 import numpy as np
+
 # from matplotlib import pyplot as plt
 
 # 16MP Camera:
 pixel_horizontal = 5376
 pixel_vertical = 3024
+
+# size of bounding boxes:
+MIN_WIDTH = 30
+MIN_HEIGTH = 40
 
 
 def extracting_cones_16MP(image):
@@ -62,7 +67,34 @@ template_10m = cv2.imread('Messungen/templates/image_cone_10m.png', 0)
 
 # detect contours
 img2, contours, hierarchy = cv2.findContours(green_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-cv2.drawContours(image, contours, -1, (255, 0, 0), 3)
+
+# delete invalid contours
+valid_contours = []
+valid_boxes = []
+for con in contours:
+    box = cv2.boundingRect(con)
+    if box[2] >= MIN_WIDTH and box[3] >= MIN_HEIGTH:
+        valid_boxes.append(box)
+        valid_contours.append(con)
+
+
+# check possible boxes
+cones = []
+i = 0
+j = 0
+for i in range(len(valid_boxes)):
+    for j in range(len(valid_boxes)):
+        # finding above and slightly to the left boxes
+        if valid_boxes[i][0] < valid_boxes[j][0] and valid_boxes[i][1] > valid_boxes[j][1]:
+            cone = (valid_boxes[i][0], valid_boxes[i][1], valid_boxes[j][0]+valid_boxes[j][2], valid_boxes[j][1]+valid_boxes[j][3])
+            # max size for a cone with x and y width
+            if ((cone[2]-cone[0]) < 400) and ((cone[3]-cone[1]) < 600):
+                print(cone)
+                cv2.rectangle(image, (cone[0], cone[1]), (cone[2], cone[3]), (0, 0, 255), 10)
+                cones.append(cone)
+cv2.drawContours(image, valid_contours, -1, (255, 0, 0), 3)
+
+# minEnclosingTriangle()
 
 # # devide in different views
 # #cutout = np.zeros((1200,pixel_horizontal,3))
