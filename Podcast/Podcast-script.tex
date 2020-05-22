@@ -10,18 +10,37 @@
 	Hi
 	My name is Benedikt Schlereth and I'm studying Applied Math and Physics in the sixth Bachelorsemester. 
 	Right now I'm working for the Fraunhofer-Institut IIS here in Nuremberg, where we want to find the best feature-extractions tools to detect certain behaviors.
-	To learn the practical implementation of new technology I support our local Formula-Student-Team Strohm und Soehne by designing PCB-Boards for the Electric car.
-	In the future I also want to contribute helping out in ours Software department.
+	To learn the practical implementation of new technology I support the local Formula-Student-Team Strohm und Soehne by designing PCB-Boards for our Electric car.
+	In the future I also want to help out in our Software department.
 	
 	
 	\section{motivation}
 	First let me explain what Formula Student is:
 	Formula-Student is an international design and construction competition where teams from all around the world are constructing and then racing single seat formula race-cars.
 	With the new event of Formula-Student-Driver-less Teams are encouraged to develop their own self-Driving cars.
-	My motivation is to kickoff the development of our own Driver-less Vehicle by implementing the first step and providing a way to detect the boundaries of the track. 
+	My motivation is to kickoff the development of our own Driver-less Vehicle by implementing the first step and providing a way to detect the boundaries of a race track. 
 	
+	The car will drive on a set course marked with blue and yellow cones. So the only objects that need to be detected are the said cones and no other cars or people. There a strict safety-Rules in place, to protect man and machine which aren't of any interest for this project. 
 	
+	\section{starting}
+	A complete self-Driving car would be a project for a big group or a PHD-Student, so I will focus only on detecting the edge of the track. 
+	To detect the boundaries a computer has to visualize the cones.
+	My first step is to extract only the important colors from a given image to filter out the background.
+	So with only the racecar on the track the only blue or yellow parts should be the pins.
+	Now the image should only consist of the cones that due to Image noise have odd shapes and no clear edges. 
+	
+	\section{Algorithmus}
+	To get a clearer Image with sharper edges to examine I have to calculate the Convex hull of the remaining objects inside the Image.
+	The Convex Hull is the smallest region containing all points while having no Concave corners.
+	It is an important step for a few image-processing Algorithms, so development for  Gift-Wrapping-Algorithms are dating back quit far in computer history.	
+	To lose not to much time on calculation it is important to choose an fast algorithm.
+	There are several available and one is already implemented in OpenCV, an Open Source Python-Library for computer-Vision.
+	But there are several drawbacks with Gift-wrapping algorithms.
+	Most of them are slow and the fast ones are proved to be wrong on some special occasions.
 	
 	\section{publication}
+	And now lets have a look on one algorithm by Graham and Yao.
+	
+	\section{wrap-up}
 	
 \end{document}
