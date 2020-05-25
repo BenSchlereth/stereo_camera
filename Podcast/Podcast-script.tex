@@ -40,6 +40,16 @@
 	
 	\section{publication}
 	And now lets have a look on one algorithm by Graham and Yao.
+	The first step is to connect points in a given dataset with a straight line and walking around in a clockwise fashion.  
+	Every vertices is now marked with a start and end Location.
+	Two vertices p and q having one Point in common can be written like p dot q.
+	If we ar looking at such an example and extending both vertices to infinity and walking along those lines and a point z always lies on the right or on the line of both vertices, z is part of a so called pocket 
+	if it lies to the left of at least one vertices it is not part of the same pocket.
+	Connecting more vertices to a closed loop gives us a pocket with some points already enclosed by one hull.
+	
+	Now all points are enclosed by some hull. To find the convex Hull all the pockets or left hulls need to be connected.
+	Therefore we choose the minimum and maximum Points of all left pockets and connecting those points. If the vertices are not convex then the point will be rejected and left out in a way it will still stay in bound of the convex hull.
+	
 	
 	\section{wrap-up}
 	
