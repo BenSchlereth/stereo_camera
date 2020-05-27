@@ -52,7 +52,7 @@ def colorfilter(image):
 
 
 # Get image
-image = cv2.imread('Messungen/Messung_1/Gerade_Links.jpg')
+image = cv2.imread('Messungen/Messung_1/Gerade_Rechts.jpg')
 filtered_image, green_mask = colorfilter(image)
 filtered_gray = cv2.cvtColor(filtered_image, cv2.COLOR_BGR2GRAY)
 
@@ -65,7 +65,7 @@ template_10m = cv2.imread('Messungen/templates/image_cone_10m.png', 0)
 
 # detect contours
 img2, contours, hierarchy = cv2.findContours(green_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
+print(hierarchy)
 # delete invalid contours
 valid_contours = []
 valid_boxes = []
@@ -79,16 +79,10 @@ for con in contours:
 # create hull array for convex hull points
 hull = []
 # calculate points for each contour
-for i in range(len(contours)):
-    # creating convex hull object for each contour
-    hull.append(cv2.convexHull(contours[i], False))
+for con in valid_contours:
+    hull.append(cv2.convexHull(con, True))
 
-for i in range(len(contours)):
-    print(i)
-    cv2.drawContours(image, hull, i, (255, 0, 0), 8, 8)
-
-
-
+cv2.drawContours(image, hull, -1, (255, 0, 0), 8, 8)
 
 # # devide in different views
 # #cutout = np.zeros((1200,pixel_horizontal,3))
