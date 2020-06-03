@@ -71,21 +71,33 @@ foreground_contours = []
 for hier, con in zip(hierarchy[0], contours):
     if hier[3] == -1:
         foreground_contours.append(con)
-print(foreground_contours)
 
-# delete invalid contours
+# delete small contours and draw bounding boxes
 valid_contours = []
 valid_boxes = []
-for con in contours:
+for con in foreground_contours:
     box = cv2.boundingRect(con)
     if box[2] >= MIN_WIDTH and box[3] >= MIN_HEIGTH:
         valid_boxes.append(box)
         valid_contours.append(con)
-        cv2.rectangle(image, (box[0] - 4, box[1] - 4), (box[0] + box[2] + 4, box[1] + box[3] + 4), (0, 0, 255), 10)
+
+
+# calculate ratio to search for cones
+top = []
+for box in valid_boxes:
+    ratio = box[2]/box[3]
+    if 0.6 < ratio < 0.8:
+        top.append(box)
+        box_x1 = box[0] - box[2] - 4
+        box_y1 = box[1] + int(3*box[3]) - 4
+        box_x2 = box[0] + 2*box[2] + 4
+        box_y2 = box[1] + 4
+        cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (0, 0, 255), 10)
+        print(box)
 
 # create hull array for convex hull points
 hull = []
-for con in foreground_contours:
+for con in valid_contours:
     hull.append(cv2.convexHull(con, True))
 
 cv2.drawContours(image, hull, -1, (255, 0, 0), 8, 8)
@@ -150,8 +162,8 @@ cv2.drawContours(image, hull, -1, (255, 0, 0), 8, 8)
 cv2.namedWindow("original", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("original", 1000, 600)
 cv2.imshow("original", image)
-cv2.namedWindow("mask", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("mask", 1000, 600)
-cv2.imshow("mask", green_mask)
+# cv2.namedWindow("mask", cv2.WINDOW_NORMAL)
+# cv2.resizeWindow("mask", 1000, 600)
+# cv2.imshow("mask", green_mask)
 
 cv2.waitKey(0)
