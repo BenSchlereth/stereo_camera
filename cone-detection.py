@@ -1,7 +1,7 @@
 """detects cones in Images"""
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 
 # 16MP Camera:
 pixel_horizontal = 5376
@@ -110,18 +110,18 @@ overlay = cv2.add(thresh_middle[900:,:],thresh_front[0:300,:])
 converted_image[1800:2100,:] = overlay
 converted_image[2100:,:] = thresh_front[300:,:]
 
-plt.subplot(121), plt.imshow(res, cmap='gray')
-plt.title('Matching Result'), plt.xticks([]), plt.yticks([])
-plt.subplot(122), plt.imshow(converted_image, cmap='gray')
-plt.title('Detected Point'), plt.xticks([]), plt.yticks([])
-plt.suptitle("matching")
-plt.show()
+# plt.subplot(121), plt.imshow(res, cmap='gray')
+# plt.title('Matching Result'), plt.xticks([]), plt.yticks([])
+# plt.subplot(122), plt.imshow(converted_image, cmap='gray')
+# plt.title('Detected Point'), plt.xticks([]), plt.yticks([])
+# plt.suptitle("matching")
+# plt.show()
 
-# cv2.namedWindow("original",cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("original", 600,600)
-# cv2.imshow("original", filtered_gray)
-# cv2.namedWindow("template",cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("template", 600,600)
-# cv2.imshow("template", template_2m)
+cv2.namedWindow("original",cv2.WINDOW_NORMAL)
+cv2.resizeWindow("original", 1000,600)
+cv2.imshow("original", green_mask)
+cv2.namedWindow("template",cv2.WINDOW_NORMAL)
+cv2.resizeWindow("template", 1000,600)
+cv2.imshow("template", template_2m)
 
 cv2.waitKey(0)
