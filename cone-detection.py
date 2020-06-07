@@ -1,6 +1,9 @@
 """detects cones in Images"""
 import cv2
 import numpy as np
+import time
+
+start_time=time.time()
 
 # 16MP Camera:
 pixel_horizontal = 5376
@@ -97,7 +100,8 @@ for con in hull:
         box_x2 = box[0] + 2*box[2] + 4
         box_y2 = box[1] + 4
         cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (0, 0, 255), 10)
-        print(box)
+
+print("---%s seconds---" % (time.time()-start_time))
 
 cv2.namedWindow("original", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("original", 1000, 600)
