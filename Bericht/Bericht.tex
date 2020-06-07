@@ -1,3 +1,4 @@
+% !TeX spellcheck = de
 \documentclass[10pt,a4paper]{article}
 \usepackage[latin1]{inputenc}
 \usepackage{color}
@@ -10,14 +11,20 @@ numbersep=5pt, % how far the line-numbers are from the code
 }
 
 \title{Finding the Convex Hull with Application to Distance Measurements for a Formula Student Car}
+\author{Benedikt Schlereth}
+\date{\today}
 
 \begin{document}
 	\maketitle
+	\tableofcontents
 	
 	\section{Introduction}
+	
+	
 	\section{Steps to extract the features}
-	To find the cones inside a picture one could create a dataset of 100+ cones and then train a neural network.
-	For this application it is not necessary to detect different objects so it is also possible to describe the features of a cone and search for them inside a picture.
+	To find the cones inside a picture one could create a dataset of 100+ cones and then train a neural network. But working with a neural network brings the additional difficulties to choose a network type that is efficient to run on a mobile platform while being reliable.
+	It is also not necessary for this type of application to detect different objects in one frame.
+	With only cones in three different colors to detect it is quite simple to describe the features of them.
 	To visualize the process i choose a scene with green cones an different lighting and ground.
 	\begin{figure}[h]
 		\centering
@@ -60,16 +67,42 @@ return blur, mask
 		\label{binary-image}
 	\end{figure}
 	
-	But as seen in the top right hand corner of the image
+	But as seen in the top right hand corner of the image some noise will be left inside the picture. Therefore we will need another filter. We can expect that noise only includes a few pixel so filtering out small areas results in only having bigger areas left.
+	
+	\subsection{hierarchy}
+	Sometimes small dots or areas are left inside on parts of the cones. Luckily the contour-function gives us back the hierarchy of the contours. By filtering out the smaller regions inside the bigger ones no leaves only parts of the cones with no noise inside the areas.
 	
 	\subsection{convex-hull}
+	The next step will be to find the convex hulls. What those are and how they are found will be described in the section \ref{convex-hull}. After finding the convex hull of every contour we are left with nearly perfect edges of the green areas of the cones. 
 	
 	\subsection{aspect ratio}
+	Being cone-shape we know that the top part has no matter at what angle we are looking onto the cone similar height to width ratio. 
 	
 	\subsection{bounding box}
 	
-	\section{convex-Hull}
+	\section{convex-Hull algorithm by Graham} \label{convex-hull}
+	
+	\section{distance estimation}
+	
+	\subsection{pixel}
+	% estimate the distance with the pixel in vertical direction
+	
+	\subsection{ratio}
+	% estimate distance with the distance between the top and bottom part of the cone
+	
+	\subsection{error}
+	% estimate the error of the calculation
+	
+	\subsection{disruption}
+	% discuss possible disruptions that can occur while driving (e.g bumps on the track)
+	
+	\section{tests}
+	% test the algorithmus with different lighting and roadcondition
 	
 	\section{wrap-up}
+	% Discussion after evaluating the tests
+	
+	\section{Future prospects}
+	% Steps in the future (e.g draw own pictures to test faulty inputs, test robustness of code)
 	
 \end{document}
