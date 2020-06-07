@@ -66,28 +66,32 @@ template_10m = cv2.imread('Messungen/templates/image_cone_10m.png', 0)
 # detect contours
 img2, contours, hierarchy = cv2.findContours(green_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-# find valid contours with hierachy
+# find valid contours with hierarchy
 foreground_contours = []
 for hier, con in zip(hierarchy[0], contours):
     if hier[3] == -1:
         foreground_contours.append(con)
 
-# delete small contours and draw bounding boxes
+# delete small contours
 valid_contours = []
-valid_boxes = []
 for con in foreground_contours:
     box = cv2.boundingRect(con)
     if box[2] >= MIN_WIDTH and box[3] >= MIN_HEIGTH:
-        valid_boxes.append(box)
         valid_contours.append(con)
 
+# create hull array for convex hull points
+hull = []
+for con in valid_contours:
+    hull.append(cv2.convexHull(con, True))
+cv2.drawContours(image, hull, -1, (255, 0, 0), 8, 8)
 
 # calculate ratio to search for cones
-top = []
-for box in valid_boxes:
+top_part = []
+for con in hull:
+    box = cv2.boundingRect(con)
     ratio = box[2]/box[3]
     if 0.6 < ratio < 0.8:
-        top.append(box)
+        top_part.append(box)
         box_x1 = box[0] - box[2] - 4
         box_y1 = box[1] + int(3*box[3]) - 4
         box_x2 = box[0] + 2*box[2] + 4
@@ -95,75 +99,8 @@ for box in valid_boxes:
         cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (0, 0, 255), 10)
         print(box)
 
-# create hull array for convex hull points
-hull = []
-for con in valid_contours:
-    hull.append(cv2.convexHull(con, True))
-
-cv2.drawContours(image, hull, -1, (255, 0, 0), 8, 8)
-
-# # devide in different views
-# #cutout = np.zeros((1200,pixel_horizontal,3))
-# #cutout[:,:,0] = filtered_gray[   0:1200,:] #backround
-# #cutout[:,:,1] = filtered_gray[ 900:2100,:]
-# #cutout[:,:,2] = filtered_gray[1824:    ,:] #foreground
-# back = filtered_gray[0:1200, :]     # backround
-# middle = filtered_gray[900:2100, :]
-# front = filtered_gray[1800:, :]     # foreground
-#
-# # Apply template Matching
-# res = cv2.matchTemplate(front, template_2m, cv2.TM_CCORR)
-# w, h = template_2m.shape[::-1]
-# min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-# top_left = max_loc
-# bottom_right = (top_left[0] + w, top_left[1] + h)
-# cv2.rectangle(front, top_left, bottom_right, 255, 2)
-#
-# res = cv2.matchTemplate(middle, template_4m, cv2.TM_CCORR)
-# w, h = template_4m.shape[::-1]
-# min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-# top_left = max_loc
-# bottom_right = (top_left[0] + w, top_left[1] + h)
-# cv2.rectangle(middle, top_left, bottom_right, 255, 2)
-#
-# res = cv2.matchTemplate(back, template_6m, cv2.TM_CCORR)
-# w, h = template_6m.shape[::-1]
-# min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-# top_left = max_loc
-# bottom_right = (top_left[0] + w, top_left[1] + h)
-# cv2.rectangle(back, top_left, bottom_right, 255, 2)
-#
-# # to binary image
-# _, thresh_img = cv2.threshold(filtered_gray,75,255,cv2.THRESH_BINARY)
-# _, thresh_back = cv2.threshold(back,75,255,cv2.THRESH_BINARY)
-# _, thresh_middle = cv2.threshold(middle,75,255,cv2.THRESH_BINARY)
-# _, thresh_front = cv2.threshold(front,75,255,cv2.THRESH_BINARY)
-#
-#
-# #Converting image Back
-# converted_image = np.zeros((pixel_vertical,pixel_horizontal))
-# converted_image[0:900,:] = thresh_back[0:900,:]
-# #Overlay between back and middle
-# overlay = cv2.bitwise_or(thresh_back[900:,:],thresh_middle[0:300,:])
-# converted_image[900:1200,:]=overlay
-# converted_image[1200:1800,:] = thresh_middle[300:900,:]
-# #Overlay between middle and back
-# overlay = cv2.add(thresh_middle[900:,:],thresh_front[0:300,:])
-# converted_image[1800:2100,:] = overlay
-# converted_image[2100:,:] = thresh_front[300:,:]
-#
-# plt.subplot(121), plt.imshow(res, cmap='gray')
-# plt.title('Matching Result'), plt.xticks([]), plt.yticks([])
-# plt.subplot(122), plt.imshow(converted_image, cmap='gray')
-# plt.title('Detected Point'), plt.xticks([]), plt.yticks([])
-# plt.suptitle("matching")
-# plt.show()
-
 cv2.namedWindow("original", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("original", 1000, 600)
 cv2.imshow("original", image)
-# cv2.namedWindow("mask", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("mask", 1000, 600)
-# cv2.imshow("mask", green_mask)
 
 cv2.waitKey(0)
