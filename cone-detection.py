@@ -56,19 +56,34 @@ for con in valid_contours:
     hull.append(cv2.convexHull(con, True))
 cv2.drawContours(image, hull, -1, (255, 0, 0), 8, 8)
 
-# calculate ratio to search for cones
+# calculate ratio to search the top part of a cone
 top_part = []
 for con in hull:
     box = cv2.boundingRect(con)
     ratio = box[2] / box[3]
     if 0.6 < ratio < 0.8:
         top_part.append(box)
-        box_x1 = box[0] - box[2] - 4
-        box_y1 = box[1] + int(3 * box[3]) - 4
-        box_x2 = box[0] + 2 * box[2] + 4
-        box_y2 = box[1] + 4
-        cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (0, 0, 255), 10)
 
+# find the bottom part of a cone
+bottom_part = []
+for box in top_part:
+    min_distance = 1000
+    for con in hull:
+        bounding_box = cv2.boundingRect(con)
+        distance = bounding_box[1] - box[1]
+        if min_distance > distance > 1:
+            min_distance = distance
+            possible_box = bounding_box
+    bottom_part.append(possible_box)
+print(bottom_part)
+
+# print bounding boxes
+for top, bottom in zip(top_part, bottom_part):
+    box_x1 = bottom[0]
+    box_y1 = bottom[1] + bottom[3] - 4
+    box_x2 = bottom[0] + bottom[2] + 4
+    box_y2 = top[1]
+    cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (0, 0, 255), 10)
 
 print("---%s seconds---" % (time.time() - start_time))
 
