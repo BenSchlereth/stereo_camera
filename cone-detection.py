@@ -9,8 +9,8 @@ pixel_horizontal = 5376
 pixel_vertical = 3024
 
 # size of bounding boxes:
-MIN_WIDTH = 30
-MIN_HEIGTH = 40
+MIN_WIDTH = 25
+MIN_HEIGTH = 35
 
 
 def colorfilter(image):
@@ -74,16 +74,23 @@ for box in top_part:
         if min_distance > distance > 1:
             min_distance = distance
             possible_box = bounding_box
+    # estimate distance with ratio
+    print("estimation with ratio", (min_distance/box[3]-1.57)/0.06, "m")
+    print("estimation with height", (240-box[3])/21, "m")
+    y_Koo = possible_box[1] + possible_box[3] - box[1]
+    print("estimation with overall-height", (725-y_Koo)/60, "m")
+    print()
     bottom_part.append(possible_box)
-print(bottom_part)
 
-# print bounding boxes
+# draw bounding boxes
 for top, bottom in zip(top_part, bottom_part):
     box_x1 = bottom[0]
-    box_y1 = bottom[1] + bottom[3] - 4
-    box_x2 = bottom[0] + bottom[2] + 4
+    box_y1 = bottom[1] + bottom[3]
+    box_x2 = bottom[0] + bottom[2]
     box_y2 = top[1]
     cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (0, 0, 255), 10)
+
+
 
 print("---%s seconds---" % (time.time() - start_time))
 
