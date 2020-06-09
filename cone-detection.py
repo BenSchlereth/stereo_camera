@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 import time
+
 start_time = time.time()
 
 # 16MP Camera:
@@ -75,10 +76,10 @@ for box in top_part:
             min_distance = distance
             possible_box = bounding_box
     # estimate distance with ratio
-    print("estimation with ratio", (min_distance/box[3]-1.57)/0.06, "m")
-    print("estimation with height", (240-box[3])/21, "m")
+    print("estimation with ratio", (min_distance / box[3] - 1.57) / 0.06, "m")
+    print("estimation with height", (2 * 229) / box[3], "m")
     y_Koo = possible_box[1] + possible_box[3] - box[1]
-    print("estimation with overall-height", (725-y_Koo)/60, "m")
+    print("estimation with overall-height", (2 * 708) / y_Koo, "m")
     print()
     bottom_part.append(possible_box)
 
@@ -89,8 +90,6 @@ for top, bottom in zip(top_part, bottom_part):
     box_x2 = bottom[0] + bottom[2]
     box_y2 = top[1]
     cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (0, 0, 255), 10)
-
-
 
 print("---%s seconds---" % (time.time() - start_time))
 
