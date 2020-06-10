@@ -17,6 +17,7 @@ numbersep=5pt, % how far the line-numbers are from the code
 \begin{document}
 	\maketitle
 	\tableofcontents
+	\pagebreak
 	
 	\section{Introduction}
 	
@@ -67,25 +68,40 @@ return blur, mask
 		\label{binary-image}
 	\end{figure}
 	
-	But as seen in the top right hand corner of the image some noise will be left inside the picture. Therefore we will need another filter. We can expect that noise only includes a few pixel so filtering out small areas results in only having bigger areas left.
+	But as seen in the top right hand corner of the image some noise will be left inside the picture. Therefore another filter is needed. A good difference between important and noisy areas is the size of the contour. This will delete all small contours which are most probably not important but also cones that are far away. The first test showed that excluding such cones does not matter.
 	
 	\subsection{hierarchy}
 	Sometimes small dots or areas are left inside on parts of the cones. Luckily the contour-function gives us back the hierarchy of the contours. By filtering out the smaller regions inside the bigger ones no leaves only parts of the cones with no noise inside the areas.
 	
 	\subsection{convex-hull}
-	The next step will be to find the convex hulls. What those are and how they are found will be described in the section \ref{convex-hull}. After finding the convex hull of every contour we are left with nearly perfect edges of the green areas of the cones. 
+	The next step will be to find the convex hulls. What those are and how they are found will be described in the section \ref{convex-hull}. The convex-hull leaves a very good approximation of the cones edges as seen in Figure \ref{convex-hull-picture}
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.5\textwidth]{Abb/convex-hull.png}
+		\caption{convex-hull}
+		\label{convex-hull-picture}
+	\end{figure}
 	
 	\subsection{aspect ratio}
-	Being cone-shape we know that the top part has no matter at what angle we are looking onto the cone similar height to width ratio. 
+	A nice feature of the cones is the round top part. So no matter at what angle or distance the convex hull is detected the ratio between the height and width stays the same.
 	
 	\subsection{bounding box}
+	With every top part of the cones found now the bottom part needs to be added. Therefore the distance to every other contour is calculated and the nearest one below the top part belongs to the same cone.
+	The maximum points of both contours give the outlines of a bounding box which is drawn with red-color in Figure \ref{bounding-box}
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.5\textwidth]{Abb/bounding-box.png}
+		\caption{bounding-box}
+		\label{bounding-box}
+	\end{figure}
 	
 	\section{convex-Hull algorithm by Graham} \label{convex-hull}
 	
 	\section{distance estimation}
 	
 	\subsection{pixel}
-	% estimate the distance with the pixel in vertical direction
+	% estimate the distance with the pixel in vertical direction 
 	
 	\subsection{ratio}
 	% estimate distance with the distance between the top and bottom part of the cone
