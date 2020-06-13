@@ -4,14 +4,14 @@
 \contentsline {subsection}{\numberline {2.2}contours}{3}
 \contentsline {subsection}{\numberline {2.3}hierarchy}{3}
 \contentsline {subsection}{\numberline {2.4}convex-hull}{3}
-\contentsline {subsection}{\numberline {2.5}aspect ratio}{3}
+\contentsline {subsection}{\numberline {2.5}aspect ratio}{4}
 \contentsline {subsection}{\numberline {2.6}bounding box}{4}
 \contentsline {section}{\numberline {3}convex-Hull algorithm by Graham}{4}
 \contentsline {section}{\numberline {4}distance estimation}{4}
-\contentsline {subsection}{\numberline {4.1}pixel}{4}
-\contentsline {subsection}{\numberline {4.2}ratio}{4}
-\contentsline {subsection}{\numberline {4.3}error}{4}
-\contentsline {subsection}{\numberline {4.4}disruption}{4}
-\contentsline {section}{\numberline {5}tests}{4}
-\contentsline {section}{\numberline {6}wrap-up}{4}
-\contentsline {section}{\numberline {7}Future prospects}{4}
+\contentsline {subsection}{\numberline {4.1}Height}{5}
+\contentsline {subsection}{\numberline {4.2}ratio}{5}
+\contentsline {subsection}{\numberline {4.3}error}{5}
+\contentsline {subsection}{\numberline {4.4}disruption}{5}
+\contentsline {section}{\numberline {5}tests}{5}
+\contentsline {section}{\numberline {6}summary}{5}
+\contentsline {section}{\numberline {7}discussion}{5}

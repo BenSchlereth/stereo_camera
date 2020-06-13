@@ -19,6 +19,11 @@ numbersep=5pt, % how far the line-numbers are from the code
 	\tableofcontents
 	\pagebreak
 	
+	\begin{abstract}
+	To find cones on the track for autonomous racing a computer has to visualize them and know how far away they are.
+	For Visualizing the features of the cones inside the image are filtered out. After extracting the color the contours have rough edges. To smooth them out the convex hull gives back a nice contour with the out-most boundary of the cones. Knowing the dimension of the cone and proportions a Distance estimation can be done.
+	\end{abstract}
+	
 	\section{Introduction}
 	
 	
@@ -99,8 +104,11 @@ return blur, mask
 	\section{convex-Hull algorithm by Graham} \label{convex-hull}
 	
 	\section{distance estimation}
-	
-	\subsection{pixel}
+	To find out where the cones are on the track the distance to each cone must be calculated. 
+	With only one camera the number of pixel is the only value that can be used. 
+	A stereo camera on the other hand would make triangulation possible.
+
+	\subsection{Height}
 	% estimate the distance with the pixel in vertical direction 
 	
 	\subsection{ratio}
@@ -115,10 +123,10 @@ return blur, mask
 	\section{tests}
 	% test the algorithmus with different lighting and roadcondition
 	
-	\section{wrap-up}
+	\section{summary}
 	% Discussion after evaluating the tests
 	
-	\section{Future prospects}
+	\section{discussion}
 	% Steps in the future (e.g draw own pictures to test faulty inputs, test robustness of code)
 	
 \end{document}
