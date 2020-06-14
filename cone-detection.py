@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 import time
+from cone import Cone
 
 start_time = time.time()
 
@@ -58,38 +59,42 @@ for con in valid_contours:
 cv2.drawContours(image, hull, -1, (255, 0, 0), 8, 8)
 
 # calculate ratio to search the top part of a cone
-top_part = []
+cones = []
 for con in hull:
     box = cv2.boundingRect(con)
     ratio = box[2] / box[3]
     if 0.6 < ratio < 0.8:
-        top_part.append(box)
+        detected = Cone()
+        detected.top_box = box
+        detected.top_con = con
+        cones.append(detected)
 
 # find the bottom part of a cone
-bottom_part = []
-for box in top_part:
+for cone in cones:
     min_distance = 1000
     for con in hull:
         bounding_box = cv2.boundingRect(con)
-        distance = bounding_box[1] - box[1]
-        if min_distance > distance > 1:
+        is_below = False
+        if (bounding_box[1] - cone.top_box[1]) > 0:
+            is_below = True
+        distance = np.sqrt((bounding_box[1] - cone.top_box[1])**2 + (bounding_box[0] - cone.top_box[0])**2)
+        if min_distance > distance > 0 and is_below:
             min_distance = distance
             possible_box = bounding_box
-    # estimate distance with ratio
-    print("estimation with ratio", (min_distance / box[3] - 1.57) / 0.06, "m")
-    print("estimation with height", (2 * 229) / box[3], "m")
-    y_Koo = possible_box[1] + possible_box[3] - box[1]
+            possible_con = con
+    print("estimation with ratio", (min_distance / cone.top_box[3] - 1.57) / 0.06, "m")
+    print("estimation with height", (2 * 229) / cone.top_box[3], "m")
+    y_Koo = possible_box[1] + possible_box[3] - cone.top_box[1]
     print("estimation with overall-height", (2 * 708) / y_Koo, "m")
     print()
-    bottom_part.append(possible_box)
+    cone.bottom_box = possible_box
+    cone.bottom_con = possible_con
 
 # draw bounding boxes
-for top, bottom in zip(top_part, bottom_part):
-    box_x1 = bottom[0]
-    box_y1 = bottom[1] + bottom[3]
-    box_x2 = bottom[0] + bottom[2]
-    box_y2 = top[1]
-    cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (0, 0, 255), 10)
+for cone in cones:
+    cone.bounding_box()
+    cv2.rectangle(image, cone.left_bottom_corner, cone.right_top_corner, (0, 0, 255), 10)
+
 
 print("---%s seconds---" % (time.time() - start_time))
 
