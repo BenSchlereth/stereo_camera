@@ -17,7 +17,7 @@ def colorfilter(image):
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     # value for colorfilter
-    lower_green = np.array([30, 100, 0])
+    lower_green = np.array([45, 100, 0])
     upper_green = np.array([90, 255, 255])
 
     mask = cv2.inRange(hsv, lower_green, upper_green)
