@@ -29,7 +29,7 @@ def colorfilter(image):
 
 
 # Get image
-image = cv2.imread('Messungen/Messung_2/Gerade_Links_1080p.jpg')
+image = cv2.imread('Messungen/Messung_2/cone_rotated_1_1080p.jpg')
 filtered_image, green_mask = colorfilter(image)
 
 # detect contours
