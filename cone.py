@@ -97,11 +97,11 @@ class Cone(object):
         """calculate the distance to the cone with different functions"""
         # with overall height
         height = self.lower_box[1] + self.lower_box[3] - self.upper_box[1]
-        self.overall_height = (2 * 708) / height    # calibrated for 2m distance
+        self.overall_height = (2 * 254) / height    # calibrated for 2m distance
         print("distance with overall height:   ", self.overall_height, "m")
         # with side length
         side = np.sqrt((self.lower_right_top[0] - self.upper_right_top[0]) ** 2
                        + (self.lower_right_top[1] - self.upper_right_top[1]) ** 2)
-        self.top_part_height = (2 * 394) / side     # calibrated for 2m distance
+        self.top_part_height = (2 * 140) / side     # calibrated for 2m distance
         print("distance with side length: %2.3f m" % self.top_part_height)
         self.ratio = 0

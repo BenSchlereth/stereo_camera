@@ -6,13 +6,9 @@ from cone import Cone
 
 start_time = time.time()
 
-# 16MP Camera:
-pixel_horizontal = 5376
-pixel_vertical = 3024
-
 # size of bounding boxes:
-MIN_WIDTH = 25
-MIN_HEIGTH = 35
+MIN_WIDTH = 10
+MIN_HEIGTH = 12
 
 
 def colorfilter(image):
@@ -33,7 +29,7 @@ def colorfilter(image):
 
 
 # Get image
-image = cv2.imread('Messungen/Messung_1/Gerade_Links.jpg')
+image = cv2.imread('Messungen/Messung_2/Gerade_Links_1080p.jpg')
 filtered_image, green_mask = colorfilter(image)
 
 # detect contours
