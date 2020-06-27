@@ -136,9 +136,9 @@ return blur, mask
 	The thin lens equation is given as
 	$$\frac{D}{H}=\frac{d}{h}$$
 	where $d$ is an unknown variable depending on the manufacturer of the camera.
-	$d$ can than be calculated with $d=\frac{D_1*h_1}{H}$ and then calibrated by taking a picture of a cone at a known distance. After evaluating the dimensions a good estimation for $\frac{D_1}{h_1}$ is $1416\frac{m}{px}$.
+	$d$ can than be calculated with $d=\frac{D_1*h_1}{H}$ and then calibrated by taking a picture of a cone at a known distance. After evaluating the dimensions a good estimation for $\frac{D_1}{h_1}$ is $440\frac{m}{px}$.
 	So to calculate the distance to each cone the following equation can be used:
-	$$D = \frac{1416}{h}$$
+	$$D = \frac{440}{h}$$
 	
 	\subsection{Side-Length}
 	% estimate distance with the distance between the top and bottom part of the cone
@@ -183,13 +183,23 @@ return blur, mask
 	 
 	By drawing a bounding box around one section the area where the top and bottom corner-points should lie can be estimated. Next step is to go through the points of the convex hull. If it lies inside a margin of the top or bottom line of the bounding box it is maybe a corner point. So the next step is then to look if it lies more to the left or to the right then an already scanned point. That way the outermost points will be detected.
 	 
-	By then calculating the distance between the Top-Right-corner of the top part to the Top-Right-corner of the bottom part the side-length of the cone can be calculated and used for a distance estimation similar to the one used in section \ref{height-estimation}
+	By then calculating the distance between the Top-Right-corner of the top part to the Top-Right-corner of the bottom part the side-length of the cone can be calculated and used for a distance estimation similar to the one used in section \ref{height-estimation} with the calibrated value for $\frac{D_1}{h_1}=280\frac{m}{px}$
+	$$D=\frac{280}{s}$$
 	
 	
 	\subsection{Error}
 	% estimate the error of the calculation
-	To make sure the track can be monitored correctly it is important to know how good the distance estimation will be. By using only the number of pixel for an estimation you need to know how accurate the size can be estimated and how big the difference is for one pixel.
+	\subsubsection{rotation}
+	As discussed earlier it is important to estimate the distance at every possible angle the cone is facing the car. One example picture was taken to show what kind of error can occur with detecting the wrong height.
 	
+	\subsubsection{Pixel-Error}
+	To make sure the track can be monitored correctly it is important to know how good the distance estimation will be. By using only the number of pixel for an estimation you need to know how accurate the size can be estimated and how big the difference is for one pixel.
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.7\textwidth]{Abb/pixel-error.png}
+		\caption{error for one pixel}
+		\label{error-pixel}
+	\end{figure}
 	
 	\subsection{Disruption}
 	% discuss possible disruptions that can occur while driving (e.g bumps on the track)
