@@ -29,7 +29,7 @@ def colorfilter(image):
 
 
 # Get image
-image = cv2.imread('Messungen/Messung_2/cone_rotated_1_1080p.jpg')
+image = cv2.imread('Messungen/Messung_2/Gerade_Rechts_1080p.jpg')
 filtered_image, green_mask = colorfilter(image)
 
 # detect contours
@@ -91,6 +91,7 @@ for cone in cones:
     # cone.bounding_box()
     cone.upper_bounding_box()
     cone.lower_bounding_box()
+    cone.bounding_box()
     cone.distance()
     print("right", cone.lower_right_bottom)
     print("left", cone.lower_left_bottom)
@@ -99,13 +100,19 @@ for cone in cones:
     y1 = cone.upper_right_bottom[1]
     x2 = cone.upper_right_top[0]
     y2 = cone.upper_right_top[1]
+    # draw side-lines
     cv2.line(image, (x1, y1), (x2, y2), (0, 0, 255), 10)
     cv2.line(image,
              (cone.lower_right_bottom[0], cone.lower_right_bottom[1]),
              (cone.lower_right_top[0], cone.lower_right_top[1]),
              (0, 0, 255),
              10)
-    # cv2.rectangle(image, cone.lower_left_bottom, cone.upper_right_top, (0, 0, 255), 10)
+
+    # draw bounding box
+    cv2.rectangle(image, cone.bounding_box_bottom, cone.bounding_box_top, (0, 0, 255), 10)
+    # add text
+    dis = str(round(cone.top_part_height, 2))
+    cv2.putText(image, dis, cone.bounding_box_top, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
 
 print("---%s seconds---" % (time.time() - start_time))
