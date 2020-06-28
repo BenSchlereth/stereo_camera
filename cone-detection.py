@@ -82,9 +82,7 @@ for cone in cones:
         if bounding_box[0] < cone.upper_box[0] and bounding_box[1] > cone.upper_box[1]:
             distance = np.sqrt((bounding_box[1] - cone.upper_box[1]) ** 2
                                + (bounding_box[0] - cone.upper_box[0]) ** 2)
-            print(distance)
             if min_distance > distance > 0:
-                print("reached")
                 min_distance = distance
                 possible_box = bounding_box
                 possible_con = con
@@ -103,8 +101,8 @@ for cone in cones:
     cone.lower_bounding_box()
     cone.bounding_box()
     cone.distance()
-    print("right", cone.lower_right_bottom)
-    print("left", cone.lower_left_bottom)
+    print("right", cone.upper_right_top)
+    print("left", cone.lower_right_top)
     print()
     x1 = cone.upper_right_bottom[0]
     y1 = cone.upper_right_bottom[1]
@@ -122,7 +120,7 @@ for cone in cones:
     cv2.rectangle(image, cone.bounding_box_bottom, cone.bounding_box_top, (0, 0, 255), 10)
     # add text
     dis = str(round(cone.top_part_height, 2))
-    # cv2.putText(image, dis, cone.bounding_box_top, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    cv2.putText(image, dis, cone.bounding_box_top, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
 
 print("---%s seconds---" % (time.time() - start_time))

@@ -1,6 +1,6 @@
 import numpy as np
 
-margin = 10
+margin = 8
 
 
 class Cone(object):
