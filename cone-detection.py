@@ -31,7 +31,7 @@ def colorfilter(image):
 
 
 # Get image
-image = cv2.imread('Messungen/Messung_2/cone_rotated_1_1080p.jpg')
+image = cv2.imread('Messungen/Messung_2/cone_tipped_1080p.jpg')
 filtered_image, green_mask = colorfilter(image)
 
 # detect contours
@@ -127,6 +127,6 @@ print("---%s seconds---" % (time.time() - start_time))
 
 cv2.namedWindow("original", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("original", 1000, 600)
-cv2.imshow("original", image)
+cv2.imshow("original", green_mask)
 
 cv2.waitKey(0)
