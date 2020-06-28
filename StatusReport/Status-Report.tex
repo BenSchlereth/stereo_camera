@@ -7,17 +7,25 @@
 	\maketitle
 	
 	\section{Summary}
+	The target of the project is to take the first initiative towards a driverless formula student car. By finding the cones and estimating the distance to each one found inside a picture a 3D-Map of the track can then be calculated which will give the autonomes car its ability to navigate on an unknown course. 
 	
 	\section{Introduction}
-	
-	\section{Backround-Info}
+	Formula Student Driverless is a competition where Student-Teams from around the world equip there single-seat race-car to drive autonomous on a track marked by cones. A camera sensor is chosen over LIDAR or Radar because of its cheaper entrance cost and easier implementation. With the visual Feedback it is also simpler to understand and develop code. During development a single possible frame with known variables will be the subject for the research. When the code then is deployed it will be possible to read the camera-feed frame by frame and make the same extractions.
 	
 	\section{progress}
+	Currently the self developed algorithm can properly identify cones inside by extracting the features. 
+	First step is to apply a color-filter to only get areas that are part of a cone.
+	The next steps make sure that small or overlapping areas are neglected. It is important to note that cones in the lower part of the picture are closer and therefore the area is bigger. By then calculating the convex hull it gives a nearly perfect edge of each cone.
+	Using the corner-points of the convex-hull the side-length can be calculated. Because the focal-length of the camera is unknown aa calibration with a picture of a cone at a known distance is needed.
+	For visualizing the results a red rectangle will be drawn around every detected cone and the distance estimation written on the top left corner.
 	
-	\section{left out parts}
+	\section{To do}
+	The next step will be do use the distance and create a 3D-Map of the environment ahead to find the way through the track. There are different approached for this kind of problem so it will be left for another project in the future.
+	A further improvement to the distance estimation is to use two cameras. With a stereo-camera a more precise Map of the surrounding with less 
 	
 	\section{Conclusion}
-		
+	The self-developed code can already be tested to make sure it works in all possible conditions. The different lighting due to the weather condition will be the most important.
+	By extracting the feature the code is quit fast and for evaluation can be run against different neural-networks. 
 
 	
 \end{document}

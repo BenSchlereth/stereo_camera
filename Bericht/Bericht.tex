@@ -29,7 +29,7 @@ numbersep=5pt, % how far the line-numbers are from the code
 	\end{abstract}
 	
 	\section{Introduction}
-	Formula-Student is an international design and construction competition where teams from all around the world are constructing and then racing single seat formula racecars. With	the new event of Formula Student Driver less Teams are encouraged to develop their own self Driving cars.
+	Formula-Student is an international design and construction competition where teams from all around the world are constructing and then racing single seat formula racecars. With the new event of Formula Student Driver less Teams are encouraged to develop their own self Driving cars.
 	My motivation is to kick off the develpment of our own Driverless Vehicle by implementing the first step and provididing a way to detect the boundaries of a race track.
 	The track markings are strictly defined in the rules for the competition. It is important to know that the left border of the track is marked with small blue cones and the right one with small yellow cones. 
 	Start, finish and timekeeping lines are marked with big orange cones. It is also important to know, that the maximum distance between two cones in driving direction is 5m but in corners it can be expected to be less \cite{handbook}. Knowing the rules is important to understand the track-layout and be able to make an estimation on how far ahead a self-driving-vehicle needs detect boundaries. 
@@ -189,8 +189,18 @@ return blur, mask
 	
 	\subsection{Error}
 	% estimate the error of the calculation
+	With to much noise inside the image and low resolution the distance can not be accurate within a centimeter. But it is important to know how accurate each cone can be detected to know in which area a cone probably stands. 
 	\subsubsection{rotation}
-	As discussed earlier it is important to estimate the distance at every possible angle the cone is facing the car. One example picture was taken to show what kind of error can occur with detecting the wrong height.
+	As discussed earlier it is important to estimate the distance at every possible angle the cone is facing the car. One example picture (Figure \ref{cone-rotated}) was taken to show what kind of error can occur by rotating one cone by 45° to detect the maximum footprint. 
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.7\textwidth]{Abb/cone-rotated.png}
+		\caption{cone 45° rotated}
+		\label{cone-rotated}
+	\end{figure}
+	The measurements for the cone $2m$ apart show a small difference with the estimation on the left side measuring $s_{45°} = 2,22m$ and $s_{0°} = 2,23m$ on the right side. So an overall difference between both measurements of just $\Delta_s = 0,01m$. The overall-height estimation gives back $s_{45°} = 1,79m$ and $s_{0°} = 1,90m$ with a delta of $\Delta_h = 0,11m$.
+	For the cone $6m$ apart the absolute error is already more important then the the error occured due to the rotation. Nevertheless the relative distance with $\Delta_s = 0,30m$ and $\Delta_h = 0,36m$ is still a little bit better.
+	
 	
 	\subsubsection{Pixel-Error}
 	To make sure the track can be monitored correctly it is important to know how good the distance estimation will be. By using only the number of pixel for an estimation you need to know how accurate the size can be estimated and how big the difference is for one pixel.
@@ -204,6 +214,8 @@ return blur, mask
 	\subsection{Disruption}
 	% discuss possible disruptions that can occur while driving (e.g bumps on the track)
 	The most discouraging dial to get right will be the color-filter. It has to more or less accurately detect the right color inside the image. While in use it must not detect any yellow banners or the blue sky as cones, while working in bright sunlight as well as pouring rain.
+	
+	% angle of camera
 	
 	An often seen "DNF" (Did not Finish) in the driverless class is often detecting tipping over cones in one round and not being able to complete the track on the next round due to a imperfect course. So hopefully by detecting only the upstanding cones the ones not marking the true edge of the track wont disturb the car.
 	
