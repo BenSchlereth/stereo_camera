@@ -116,6 +116,8 @@ dmypy.json
 .pyre/
 
 #LaTEX
-.aux
-.pdf
-.synctex.gz
+*.aux
+*.bcf
+*.log
+*.pdf
+*.synctex.gz
