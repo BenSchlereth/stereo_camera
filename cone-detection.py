@@ -48,7 +48,7 @@ valid_contours = []
 for con in foreground_contours:
     box = cv2.boundingRect(con)
     area = cv2.contourArea(con)
-    if area > 4*box[1]-1080 > 0:
+    if area > 5*box[1]-1080 > 0:
         valid_contours.append(con)
 
 # create hull array for convex hull points
@@ -71,7 +71,7 @@ for con in hull:
 # find the bottom part of a cone
 delete = []
 for cone in cones:
-    min_distance = 3*cone.upper_box[3]
+    min_distance = 3.5*cone.upper_box[3] # initial distance
     possible_box = [0, 0, 0, 0]
     possible_con = [[[0]]]
     area_top = cv2.contourArea(cone.upper_con)
@@ -127,6 +127,6 @@ print("---%s seconds---" % (time.time() - start_time))
 
 cv2.namedWindow("original", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("original", 1000, 600)
-cv2.imshow("original", green_mask)
+cv2.imshow("original", image)
 
 cv2.waitKey(0)
