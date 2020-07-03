@@ -4,6 +4,7 @@
 \usepackage{color}
 \usepackage{graphicx} %pictures
 \usepackage{listings} %code
+\usepackage{siunitx} %units
 \usepackage{algorithm2e} %for psuedo code
 %setup for code
 \lstset{
@@ -121,12 +122,11 @@ return blur, mask
 	\section{Distance estimation}
 	To find out where the cones are on the track the distance to each cone must be calculated. 
 	With only one camera the number of pixel is the only value that can be used. It is also important to know the resolution of the used camera.
-	While it is quit simple to take high-resolution pictures and the wait for a computer to analyze it, it is not so easy in a real-time application. To make sure the picture can be read and analyzed the input will be limited to an 1920x1080 image which can be processed by a small computer-module like a Jetson-Nano in a reasonable frame-rate of about 30 fps.
-	A stereo camera on the other hand would make triangulation possible.
+	While it is quite simple to take high-resolution pictures and then wait for a computer to analyze them, it is not so easy in a real-time application. To make sure the picture can be read and analyzed the input will be limited to an 1920x1080 image which can be processed by a small computer-module like a Jetson-Nano with a frame-rate of about 30 fps.
 
 	\subsection{Height} \label{height-estimation}
 	% estimate the distance with the pixel in vertical direction 
-	The numbers of pixel measuring the y-Height($h$) can be used to estimate the distance ($D$) to each cone. With the bounding box function of OpenCV it is quite easy to get the height. 
+	The most straight forward feature to measure the heiht would be use the overall-height of the cone. By counting the pixel describing y-Height($h$). The bounding box function of OpenCV already gives back the number of pixels in the y-direction. 
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=0.5\textwidth]{Abb/distance-estimation.png}
@@ -136,7 +136,7 @@ return blur, mask
 	The thin lens equation is given as
 	$$\frac{D}{H}=\frac{d}{h}$$
 	where $d$ is an unknown variable depending on the manufacturer of the camera.
-	$d$ can than be calculated with $d=\frac{D_1*h_1}{H}$ and then calibrated by taking a picture of a cone at a known distance. After evaluating the dimensions a good estimation for $\frac{D_1}{h_1}$ is $440\frac{m}{px}$.
+	$d$ can than be calculated with $d=\frac{D_1*h_1}{H}$ and then calibrated by taking a picture of a cone at a known distance. After evaluating the dimensions a good value is $D_1 \cdot h_1 = 440\si{mpx}$.
 	So to calculate the distance to each cone the following equation can be used:
 	$$D = \frac{440}{h}$$
 	
@@ -183,7 +183,7 @@ return blur, mask
 	 
 	By drawing a bounding box around one section the area where the top and bottom corner-points should lie can be estimated. Next step is to go through the points of the convex hull. If it lies inside a margin of the top or bottom line of the bounding box it is maybe a corner point. So the next step is then to look if it lies more to the left or to the right then an already scanned point. That way the outermost points will be detected.
 	 
-	By then calculating the distance between the Top-Right-corner of the top part to the Top-Right-corner of the bottom part the side-length of the cone can be calculated and used for a distance estimation similar to the one used in section \ref{height-estimation} with the calibrated value for $\frac{D_1}{h_1}=280\frac{m}{px}$
+	By then calculating the distance between the Top-Right-corner of the top part to the Top-Right-corner of the bottom part the side-length of the cone can be calculated and used for a distance estimation similar to the one used in section \ref{height-estimation} with the calibrated value for $D_1 \cdot h_1 = 280 \si{mpx}$
 	$$D=\frac{280}{s}$$
 	
 	
@@ -199,11 +199,12 @@ return blur, mask
 		\label{cone-rotated}
 	\end{figure}
 	The measurements for the cone $2m$ apart show a small difference with the estimation on the left side measuring $s_{45°} = 2,22m$ and $s_{0°} = 2,23m$ on the right side. So an overall difference between both measurements of just $\Delta_s = 0,01m$. The overall-height estimation gives back $s_{45°} = 1,79m$ and $s_{0°} = 1,90m$ with a delta of $\Delta_h = 0,11m$.
-	For the cone $6m$ apart the absolute error is already more important then the the error occured due to the rotation. Nevertheless the relative distance with $\Delta_s = 0,30m$ and $\Delta_h = 0,36m$ is still a little bit better.
+	For the cone $6m$ apart the absolute error is already more important then the the error occurred due to the rotation. Nevertheless the relative distance with $\Delta_s = 0,30m$ and $\Delta_h = 0,36m$ is still a little bit better.
 	
 	
 	\subsubsection{Pixel-Error}
 	To make sure the track can be monitored correctly it is important to know how good the distance estimation will be. By using only the number of pixel for an estimation you need to know how accurate the size can be estimated and how big the difference is for one pixel.
+	$$\Delta D = \frac{\partial D}{\partial h} * \Delta h = \frac{D_1*h_1}{h^2}*\Delta h$$
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=0.7\textwidth]{Abb/pixel-error.png}
@@ -211,9 +212,9 @@ return blur, mask
 		\label{error-pixel}
 	\end{figure}
 	
-	\subsection{Disruption}
+	\subsection{Disruption} \label{disruption}
 	% discuss possible disruptions that can occur while driving (e.g bumps on the track)
-	The most discouraging dial to get right will be the color-filter. It has to more or less accurately detect the right color inside the image. While in use it must not detect any yellow banners or the blue sky as cones, while working in bright sunlight as well as pouring rain.
+	The most discouraging dial to get right will be the color-filter. It has to accurately detect the right color inside the image but it must not detect any yellow banners or the blue sky as cones, while working in bright sunlight as well as pouring rain.
 	
 	% angle of camera
 	
@@ -222,16 +223,24 @@ return blur, mask
 	\section{Tests}
 	% test the algorithmus with different lighting and roadcondition
 	An important test will be to what happens to a cone that is tipped over and lies somewhere on the track. Either it should not detected the cone at all or mark it as tipped over to ignore it for calculating its path.
-	%picture
-	As seen in figure ??? the computer visualize a green area but does not detect as a valid cone.
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.7\textwidth]{Abb/cone-tipped.png}
+		\caption{tipped cone}
+		\label{cone-tipped}
+	\end{figure}
+	As seen in figure\ref{cone-tipped} the computer visualize a green area but does not detect as a valid cone.
+	
+	Further Test can be done by using a computer generated image like Figure \ref{corners} and introducing possible disruption. They can be similar to the points discussed in section \ref{disruption} or be a mark on the cone in various sizes.
 	
 	
-	\section{Summary}
-	% Discussion after evaluating the tests
+	% \section{Summary}
+	% after evaluating the tests
 	
 	\section{Discussion}
 	% Steps in the future (e.g draw own pictures to test faulty inputs, test robustness of code)
-	\section{reference}
+	Visualizing the cones for a computer algorithm works really good. Further tests to evaluate the robustness are needed but with the distance estimation the next step towards creating a Map of the track can be taken. This is an important for a path-finding algorithms and to give the car the ability to know where on the track it is located. 
+	It will be an exiting future with challenging and cool new projects for our Formula Student Team.
 	
 	\begin{thebibliography}{xxxxxxxxxxxxxxxxxxx}
 		\bibitem[convex-hull, 1983]{convex-hull}{Finding the Convex Hull of a Simple Polygon, Ronald L. Graham, F.Frances Yao, 1983}
