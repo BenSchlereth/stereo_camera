@@ -74,6 +74,8 @@ return blur, mask
 	\subsection{Contours}
 	Searching for Contours on the black and white image is a easy task and delivers the same results every time.
 	
+	\pagebreak
+	
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=0.5\textwidth]{Abb/mask.png}
@@ -81,14 +83,14 @@ return blur, mask
 		\label{binary-image}
 	\end{figure}
 	
-	But as seen in the top right hand corner of the image some noise will be left inside the picture. Depending on the scenery the colorfilter will always detect areas that are not of any interest. Therefore another filter is needed. A good difference between important and noisy areas, is the size of the contour. But you have to keep in mind, that deleting all small contours also deletes cones far away. The first test showed that excluding such cones does not matter.
+	But as seen in the top right hand corner of the image some noise will be left inside the picture. Depending on the scenery the colorfilter will always detect areas that are not of any interest. Therefore another filter is needed. A good difference between important and noisy areas, is the size of the contour. But you have to keep in mind, that deleting all small contours also deletes cones far away. The first test showed that excluding such cones do not matter.
 	
 	\subsection{Hierarchy}
 	The color-filter left some pixel inside of the designated areas out and will show up as contours. Luckily the contour-function gives us back the hierarchy of each contour. By filtering out the parts lying inside of bigger areas leaves possible cone-areas with less noise.
 	
 	\subsection{Convex-Hull}
 	Now only a handful of areas should be left, so executing intense operations on these contours will not make a big difference on the runtime of the code.
-	The next step will be to find the convex hulls. A more precise description will be given in the section \ref{convex-hull}. The convex-hull leaves a very good approximation of the cones edges as seen in Figure \ref{convex-hull-picture}
+	The next step will be to find the convex hulls. A more precise description will be given in the section \ref{convex-hull}. The convex-hull leaves a very good approximation of the cones edges as seen in Figure \ref{convex-hull-picture}.
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=0.5\textwidth]{Abb/convex-hull.png}
