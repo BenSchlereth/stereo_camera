@@ -15,9 +15,9 @@ numbersep=5pt, % how far the line-numbers are from the code
 
 
 
-\title{Finding the Convex Hull with application to distance measurements for a Formula-Student race car}
+\title{Finding the Convex Hull with Application to Distance Measurements for a Formula-Student Racecar}
 \author{Benedikt Schlereth}
-\date{\today}
+\date{July 20,2020}
 
 \begin{document}
 	\maketitle
@@ -31,12 +31,12 @@ numbersep=5pt, % how far the line-numbers are from the code
 	
 	\section{Introduction}
 	Formula-Student is an international design and construction competition where teams from all around the world are constructing and then compete with their single seat Formula race cars. With the new Formula- Student Driverless class, teams are encouraged to develop their own self driving cars.
-	My motivation is to kick off the development of our own Driverless Vehicle by implementing the first steps and providing a way to detect the boundaries of a race track.
+	My motivation is to kick off the development of our own Driverless Vehicle by implementing the first steps by providing a way to detect the boundaries of a race track.
 	The track markings are strictly defined in the competitions rules. It is important to know that the left border of the track is marked with small blue cones and the right one with small yellow cones. 
-	Start, finish and timekeeping lines are marked with big orange cones. It is also important to know, that the maximum distance between two cones in driving direction is 5m, in corners it can be expected to be less \cite{handbook}. Knowing the rules is important to understand the track-layout and be able to make an estimation on how far ahead a self-driving-vehicle needs to detect boundaries as well as how exactly each position must be known. 
+	Start, finish and timekeeping lines are marked with big orange cones. It is also important to know, that the maximum distance between two cones in driving direction is 5m, in corners it can be expected to be less \cite{handbook}. Knowing the rules is important to understand the track-layout and be able to make an estimation on how far ahead a self-driving-vehicle needs to detect the boundaries as well as how exactly each position of a cone must be known. 
 	
 	\section{Steps to Extract the Features}
-	To find the cones inside a picture one could create a dataset of 100+ cones and then train a neural network. But working with a neural network brings the difficulties of choosing a network that is efficient to run on a mobile platform while detecting everything reliable.
+	To find the cones inside a picture one could create a dataset of 100+ cones and then train a neural network. But working with a neural network brings the difficulties of choosing a network that is efficient to run on a mobile platform (inference-cost) while detecting everything reliable (accuracy).
 	Most of the algorithms are designed to detect different objects, which is not necessary for this application. 
 	Only three different colors need to be detected, the shape will always be the same. With knowing the features, a fast object detection can be realized and is used for this project.
 	To visualize the process a scene with green cones and different lighting is chosen.
@@ -46,10 +46,12 @@ numbersep=5pt, % how far the line-numbers are from the code
 		\caption{example image}
 		\label{example image}
 	\end{figure}
-	The picture is taken from a height of $1,2 m$ and the distance between the cones is $2m$ with the nearest at $2m$ and the farthest at $10m$ away from the camera. The resolution is 1920 by 1080 pixels. The resolution is chosen in a way that a CMOS camera can deliver 30 fps.
+	The picture was taken from a height of $1,2 m$ and the distance between the cones is $2m$ with the nearest at $2m$ and the farthest at $10m$ away from the camera. The resolution is 1920 by 1080 pixels. The resolution is chosen in a way that a CMOS camera can deliver 30 frames per second (fps).
+	
+	\pagebreak
 	 
 	\subsection{Color Filtering}
-	The most obvious feature is the color. So the first step is to implement a color filter. For this example it is green but in the future a separate color filter for blue, yellow and orange will be implemented.
+	The most obvious feature is the color. So the first step is to implement a color filter. For this example it is green but in the future a separate color filter for blue, yellow and orange can easily be implemented.
 	\begin{lstlisting}[language=Python]
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 	
@@ -67,9 +69,9 @@ return blur, mask
 	The HSV does not describes the color with an eight-Bit value for each red, green and blue (RGB), but with a circle where the first value is for the color with 0 being red and 255 blue.
 	The second value represents the saturation and the third describes the brightness of the color.
 	
-	With knowing how the HSV color space works it is possible to find the right values which will describe the color of the cones. It will be necessary to try the colorfilter for images in bright sunlight as well as cloudy conditions the make sure to be able to detect cones in every possible environment.
+	With knowing how the HSV color space works it is possible to find the right values which will describe the color of the cones. It will be necessary to try the colorfilter for images in bright sunlight as well as cloudy conditions the make sure to detect cones in every possible environment.
 	
-	Next up is comparing every Pixel with our given value. With the OpenCV function "inRange" one image will be read and compared to the boundaries. It returns a binary image which means every pixel that was in range of the colorspectrum will be saved as a one/white and everything else will be a zero or black.
+	Next step is comparing every Pixel with our given value. With the OpenCV function "inRange" one image will be read and every pixel compared to the set boundaries. It returns a binary image which means every pixel that was in range of the colorspectrum will be saved as a one/white and everything else will be a zero or black.
 	
 	\subsection{Contours}
 	Searching for Contours on the black and white image is a easy task and delivers the same results every time.
@@ -83,14 +85,14 @@ return blur, mask
 		\label{binary-image}
 	\end{figure}
 	
-	But as seen in the top right hand corner of the image some noise will be left inside the picture. Depending on the scenery the colorfilter will always detect areas that are not of any interest. Therefore another filter is needed. A good difference between important and noisy areas, is the size of the contour. But you have to keep in mind, that deleting all small contours also deletes cones far away. The first test showed that excluding such cones do not matter.
+	But as seen in the top right hand corner of the image some noise will be left inside the picture. Depending on the scenery the colorfilter will always detect areas that are not of any interest. Therefore another filter is needed. A good difference between important and noisy areas, is the size of the contour. But you have to keep in mind, that deleting all small contours also deletes cones far away. Keeping the rules in mind, deleting the ones further away than 10m should be fine.
 	
 	\subsection{Hierarchy}
 	The color-filter left some pixel inside of the designated areas out and will show up as contours. Luckily the contour-function gives us back the hierarchy of each contour. By filtering out the parts lying inside of bigger areas leaves possible cone-areas with less noise.
 	
 	\subsection{Convex-Hull}
-	Now only a handful of areas should be left, so executing intense operations on these contours will not make a big difference on the runtime of the code.
-	The next step will be to find the convex hulls. A more precise description will be given in the section \ref{convex-hull}. The convex-hull leaves a very good approximation of the cones edges as seen in Figure \ref{convex-hull-picture}.
+	Now only a handful of areas should be left to analyze, so executing intense operations on these contours will not have a big impact on the runtime of the code.
+	The next step is finding the convex hulls. A more precise description will be given in the section \ref{convex-hull}. The convex-hull leaves a very good approximation of the cones edges as seen in Figure \ref{convex-hull-picture}.
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=0.5\textwidth]{Abb/convex-hull.png}
@@ -99,7 +101,7 @@ return blur, mask
 	\end{figure}
 	
 	\subsection{Aspect Ratio}
-	A nice feature of the cones is the round top part. So no matter at what angle or distance the convex hull is detected the ratio between the height and width stays the same. With this Feature extracted, now all top parts of cones inside the image should be detected. As seen in the Figure \ref{top-part} it does not work perfectly as it does not track the ones standing behind each other. Knowing the Rules helps to estimate that this should be a rare occasion and two missed cones are better than a cone detected where there is none.
+	A nice feature of the cones is the round top part. So no matter at what angle or distance the convex hull is detected the ratio between the height and width stays the same. With this feature extracted, now all top parts of cones inside the image should be detected. As seen in the Figure \ref{top-part} it does not work perfectly as it does not track the cones partially covered. Again, knowing the Rules helps to estimate that this should be a rare occasion and two missed cones are better than a cone detected where there is none.
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=0.5\textwidth]{Abb/top_part_cone.png}
@@ -109,8 +111,8 @@ return blur, mask
 	
 	
 	\subsection{Bounding Box}
-	With every top part of the cones found now the bottom part needs to be added. Therefore the distance to every other contour lying below is calculated and the nearest one belongs to the same cone.
-	The maxima of both contours give the outlines of a bounding box which is drawn with red-color in Figure \ref{bounding-box}. This helps visualize what the computer detects and helps in further calculations for the distance estimation.
+	With every top part of the cones found now the bottom parts need to be added. Therefore the distance to every other contour lying below and being bigger in size, is calculated. The nearest neighbor, while being not any further than the y-dimension of the top part away, is most certainly the fitting part.
+	The maxima of both contours give the outlines of a bounding box which is drawn in red on Figure \ref{bounding-box}. This helps to visualize what the computer detects and is needed for the distance estimation.
 	
 	\begin{figure}[h]
 		\centering
@@ -120,7 +122,7 @@ return blur, mask
 	\end{figure}
 	
 	\section{Convex-Hull Algorithm by Graham and Yao} \label{convex-hull}
-	The convex hull is a polygon with all points inside the boundaries while having no concave edges. Finding the Conex Hull is a well known problem with different solutions. OpenCV uses a gift-wrapping-algorithm introduced by Sklansky in 1982 \cite{opencv-doku} which is proved to be wrong on some special cases\cite{history-of-convex-hull}. To always find the right convex hull in a reasonable time an algorithm by Graham and Yao looks promising.
+	The convex hull is a polygon with all points inside the boundaries while having no concave edges. Finding the Conex Hull is a well known problem with different solutions. OpenCV uses a gift-wrapping-algorithm introduced by Sklansky in 1982 \cite{opencv-doku} which is proved to be wrong on some special cases\cite{history-of-convex-hull}. To always find the right convex hull in a reasonable time an algorithm by Graham and Yao looks promising. Sadly the time for this project run out, so there were no resources left to implement the algorithm.
 	
 	
 	
@@ -132,12 +134,15 @@ return blur, mask
 	\subsection{Height} \label{height-estimation}
 	% estimate the distance with the pixel in vertical direction 
 	One possible feature is measuring the height by counting the pixel describing the y-Height($h$) of the detected cone. The bounding box function of OpenCV already gives back the number of pixels in the y-Direction.
+	
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=0.5\textwidth]{Abb/distance-estimation.png}
 		\caption{distance-estimation}
 		\label{distance-estimation}
 	\end{figure}
+	
+	\noindent
 	The thin lens equation is given as
 	$$\frac{D}{H}=\frac{d}{h}$$
 	where $d$ is an unknown variable depending on the manufacturer of the camera.
@@ -197,22 +202,22 @@ return blur, mask
 	
 	\subsection{Error}
 	% estimate the error of the calculation
-	With to much noise inside the image and low resolution the distance can not be accurate within a centimeter. But it is important to know how accurate each cone can be detected to know in which area a cone probably stands for the car to know how fast it can travel.
+	With to much noise inside the image and low resolution the distance can not be accurate within a centimeter. But it is important to know how exactly each cone can be detected to know in which area a cone probably stands for the car to know how fast it can travel.
 	
 	\subsubsection{Rotation}
-	One error can occur due to the angle the cone is facing the car. An example picture (Figure \ref{cone-rotated}) was taken to evaluate the  error by rotating one cone by 45ï¿½. 
+	One error can occur due to the angle the cone is facing the car. An example picture (Figure \ref{cone-rotated}) was taken to evaluate the  error by rotating one cone by 45°. 
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=0.7\textwidth]{Abb/cone-rotated.png}
-		\caption{cone 45ï¿½ rotated}
+		\caption{cone 45° rotated}
 		\label{cone-rotated}
 	\end{figure}
-	The measurements for the cone $2m$ apart show a small difference with the estimation on the left side measuring $s_{45ï¿½} = 2,22m$ and $s_{0ï¿½} = 2,23m$ on the right side. So an overall difference between both measurements of just $\Delta_s = 0,01m$. The overall-height estimation gives back $s_{45ï¿½} = 1,79m$ and $s_{0ï¿½} = 1,90m$ with a delta of $\Delta_h = 0,11m$.
-	For the cone $6m$ apart the error because of noise is already more important than the error occurred due to the rotation. Nevertheless the relative distance with $\Delta_s = 0,30m$ and $\Delta_h = 0,36m$ is still a little bit better.
+	The measurements for the cone $2m$ apart show a small difference with the estimation on the left side measuring $s_{45°} = 2,22m$ and $s_{0°} = 2,23m$ on the right side. So an overall difference between both measurements of just $\Delta_s = 0,01m$. The overall-height estimation gives back $s_{45°} = 1,79m$ and $s_{0°} = 1,90m$ with a delta of $\Delta_h = 0,11m$.
+	For the cone $6m$ apart the error because of noise is already more important than the error occurred due to the rotation. Nevertheless the relative distance for the side-length with $\Delta_s = 0,30m$ is still a little bit better than for the height-measurement $\Delta_h = 0,36m$.
 	
 	
 	\subsubsection{Pixel-Error}
-	To make sure the track can be monitored correctly it is important to know how good the distance estimation will be. By using only the number of pixels for an estimation you need to know how accurate the size can be estimated and how big the difference is for one pixel.
+	To make sure the track can be monitored correctly it is important to know how good the distance estimation will be. By using only the number of pixels for an estimation you need to know how accurate the size can be estimated and how big the difference is for one pixel. The error for the different detected distances is shown in Figure \ref{error-pixel}.
 	$$\Delta D = \frac{\partial D}{\partial h} \cdot \Delta h = \frac{D_1 \cdot h_1}{h^2} \cdot \Delta h$$
 	\begin{figure}[h]
 		\centering
@@ -223,13 +228,13 @@ return blur, mask
 	
 	\subsection{Disruption} \label{disruption}
 	% discuss possible disruptions that can occur while driving (e.g bumps on the track)
-	The most discouraging dial to get right will be the color-filter. It has to accurately detect the right color inside the image but it must not detect any yellow banners or the blue sky as cones, while working in bright sunlight as well as pouring rain.
+	The most discouraging dial to get right will be the color-filter. It has to accurately detect the right color inside the image but it must not detect any yellow banners or parts of the blue sky as cones, while working in bright sunlight as well as pouring rain.
 	
-	An often seen "DNF" (Did not Finish) in the driverless class is often detecting tipping over cones in one round and not being able to complete the track on the next round due to a imperfect course. So hopefully by detecting only the upstanding cones the ones not marking the true edge of the track wont disturb the car.
+	An often seen "DNF" (Did not Finish) in the driverless class is, when a cone is tipped over. In the next round, the car detects the cone as part of the track-boundary and stops due to a imperfect course. So hopefully by detecting only the upstanding cones the ones not marking the true edge of the track wont disturb an path-finding algorithm.
 	
 	\section{Tests}
 	% test the algorithmus with different lighting and roadcondition
-	An important test will be to what happens to a cone that is tipped over and lies somewhere on the track. Either it should not detected the cone at all or mark it as tipped over to ignore it for calculating its path.
+	An important test will be to what happens to a cone that is tipped over and lies somewhere on the track. Either it should not be detected at all or mark it as tipped over to ignore it for calculating the path.
 	\begin{figure}[h]
 		\centering
 		\includegraphics[width=0.5\textwidth]{Abb/cone-tipped.png}
@@ -245,7 +250,7 @@ return blur, mask
 	
 	\section{Discussion}
 	% Steps in the future (e.g draw own pictures to test faulty inputs, test robustness of code)
-	The best angle of the camera sill needs to be evaluated. For Testing purposes it was neglected but with cones coming closer to the car than $2m$ this can make a difference.
+	The best angle of the camera sill needs to be evaluated. For Testing purposes it was neglected but with cones coming closer to the car than $2m$ this can make a noticeable difference.
 	
 	
 	Visualizing the cones for a computer algorithm works really good. Further tests to evaluate the robustness are needed, but with the distance estimation the next step towards creating a Map of the track can be taken. This is an important preprocess for a path-finding algorithms and to give the car the ability to know where on the track it is located.
