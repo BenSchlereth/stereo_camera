@@ -4,8 +4,6 @@ import numpy as np
 import time
 from cone import Cone
 
-start_time = time.time()
-
 # size of bounding boxes:
 MIN_WIDTH = 10
 MIN_HEIGTH = 12
@@ -49,6 +47,7 @@ success, image = vidcap.read()
 for i in range(2600):
     success, image = vidcap.read()
 
+start_time = time.time()
 frame = 0
 while success:
     frame = frame + 1
@@ -68,18 +67,12 @@ while success:
     for con in foreground_contours:
         box = cv2.boundingRect(con)
         area = cv2.contourArea(con)
-        if area*(-(box[1]-1080)) > 10000:
+        if area * (-(box[1] - 1080)) > 10000:
             valid_contours.append(con)
-
-    # create hull array for convex hull points
-    hull = []
-    for con in valid_contours:
-        hull.append(cv2.convexHull(con, True))
-    cv2.drawContours(image, hull, -1, (255, 0, 0), 8, 8)
 
     # calculate ratio to search the top part of a cone
     cones = []
-    for con in hull:
+    for con in valid_contours:
         box = cv2.boundingRect(con)
         ratio = box[2] / box[3]
         if 0.6 < ratio < 0.8:
@@ -91,11 +84,11 @@ while success:
     # find the bottom part of a cone
     delete = []
     for cone in cones:
-        min_distance = 3.5*cone.upper_box[3] # initial distance
+        min_distance = 3.5 * cone.upper_box[3]  # initial distance
         possible_box = [0, 0, 0, 0]
         possible_con = [[[0]]]
         area_top = cv2.contourArea(cone.upper_con)
-        for con in hull:
+        for con in valid_contours:
             bounding_box = cv2.boundingRect(con)
             area_bottom = cv2.contourArea(con)
             # bounding box is to the left and below
@@ -149,6 +142,7 @@ vidcap.release()
 # output.release()
 cv2.destroyAllWindows()
 # measure time
+print(frame)
 print("---%s seconds---" % (time.time() - start_time))
 
 # cv2.namedWindow("original", cv2.WINDOW_NORMAL)
