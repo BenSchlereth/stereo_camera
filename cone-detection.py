@@ -34,6 +34,7 @@ def colorfilter(image):
 # Get image
 image = cv2.imread('Messungen/Messung_1/Gerade_Links.jpg')
 filtered_image, green_mask = colorfilter(image)
+filtered_gray = cv2.cvtColor(filtered_image, cv2.COLOR_BGR2GRAY)
 
 # detect contours
 img2, contours, hierarchy = cv2.findContours(green_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
