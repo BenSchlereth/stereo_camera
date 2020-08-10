@@ -2,16 +2,13 @@
 import cv2
 import numpy as np
 import time
+from cone import Cone
 
 start_time = time.time()
 
-# 16MP Camera:
-pixel_horizontal = 5376
-pixel_vertical = 3024
-
 # size of bounding boxes:
-MIN_WIDTH = 25
-MIN_HEIGTH = 35
+MIN_WIDTH = 10
+MIN_HEIGTH = 12
 
 
 def colorfilter(image):
@@ -20,7 +17,9 @@ def colorfilter(image):
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     # value for colorfilter
-    lower_green = np.array([30, 100, 0])
+    # lower_green = np.array([45, 100, 0])
+    # upper_green = np.array([90, 255, 255])
+    lower_green = np.array([50, 50, 0])
     upper_green = np.array([90, 255, 255])
 
     mask = cv2.inRange(hsv, lower_green, upper_green)
@@ -32,7 +31,7 @@ def colorfilter(image):
 
 
 # Get image
-image = cv2.imread('Messungen/Messung_1/Gerade_Links.jpg')
+image = cv2.imread('Messungen/Messung_2/cone_tipped_1080p.jpg')
 filtered_image, green_mask = colorfilter(image)
 filtered_gray = cv2.cvtColor(filtered_image, cv2.COLOR_BGR2GRAY)
 
@@ -49,7 +48,8 @@ for hier, con in zip(hierarchy[0], contours):
 valid_contours = []
 for con in foreground_contours:
     box = cv2.boundingRect(con)
-    if box[2] >= MIN_WIDTH and box[3] >= MIN_HEIGTH:
+    area = cv2.contourArea(con)
+    if area > 5*box[1]-1080 > 0:
         valid_contours.append(con)
 
 # create hull array for convex hull points
@@ -59,38 +59,70 @@ for con in valid_contours:
 cv2.drawContours(image, hull, -1, (255, 0, 0), 8, 8)
 
 # calculate ratio to search the top part of a cone
-top_part = []
+cones = []
 for con in hull:
     box = cv2.boundingRect(con)
     ratio = box[2] / box[3]
     if 0.6 < ratio < 0.8:
-        top_part.append(box)
+        detected = Cone()
+        detected.upper_box = box
+        detected.upper_con = con
+        cones.append(detected)
 
 # find the bottom part of a cone
-bottom_part = []
-for box in top_part:
-    min_distance = 1000
+delete = []
+for cone in cones:
+    min_distance = 3.5*cone.upper_box[3] # initial distance
+    possible_box = [0, 0, 0, 0]
+    possible_con = [[[0]]]
+    area_top = cv2.contourArea(cone.upper_con)
     for con in hull:
         bounding_box = cv2.boundingRect(con)
-        distance = bounding_box[1] - box[1]
-        if min_distance > distance > 1:
-            min_distance = distance
-            possible_box = bounding_box
-    # estimate distance with ratio
-    print("estimation with ratio", (min_distance / box[3] - 1.57) / 0.06, "m")
-    print("estimation with height", (2 * 229) / box[3], "m")
-    y_Koo = possible_box[1] + possible_box[3] - box[1]
-    print("estimation with overall-height", (2 * 708) / y_Koo, "m")
-    print()
-    bottom_part.append(possible_box)
+        area_bottom = cv2.contourArea(con)
+        # bounding box is to the left and below
+        if bounding_box[0] < cone.upper_box[0] and bounding_box[1] > cone.upper_box[1]:
+            distance = np.sqrt((bounding_box[1] - cone.upper_box[1]) ** 2
+                               + (bounding_box[0] - cone.upper_box[0]) ** 2)
+            if min_distance > distance > 0:
+                min_distance = distance
+                possible_box = bounding_box
+                possible_con = con
+    cone.lower_box = possible_box
+    cone.lower_con = possible_con
+    if cone.lower_con[0][0][0] == 0 or cone.lower_box[0] == 0:
+        delete.append(cone)
+
+for cone in delete:
+    cones.remove(cone)
 
 # draw bounding boxes
-for top, bottom in zip(top_part, bottom_part):
-    box_x1 = bottom[0]
-    box_y1 = bottom[1] + bottom[3]
-    box_x2 = bottom[0] + bottom[2]
-    box_y2 = top[1]
-    cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (0, 0, 255), 10)
+for cone in cones:
+    # cone.bounding_box()
+    cone.upper_bounding_box()
+    cone.lower_bounding_box()
+    cone.bounding_box()
+    cone.distance()
+    print("right", cone.upper_right_top)
+    print("left", cone.lower_right_top)
+    print()
+    x1 = cone.upper_right_bottom[0]
+    y1 = cone.upper_right_bottom[1]
+    x2 = cone.upper_right_top[0]
+    y2 = cone.upper_right_top[1]
+    # draw side-lines
+    # cv2.line(image, (x1, y1), (x2, y2), (0, 0, 255), 10)
+    # cv2.line(image,
+    #          (cone.lower_right_bottom[0], cone.lower_right_bottom[1]),
+    #          (cone.lower_right_top[0], cone.lower_right_top[1]),
+    #          (0, 0, 255),
+    #          10)
+
+    # draw bounding box
+    cv2.rectangle(image, cone.bounding_box_bottom, cone.bounding_box_top, (0, 0, 255), 10)
+    # add text
+    dis = str(round(cone.top_part_height, 2))
+    cv2.putText(image, dis, cone.bounding_box_top, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
 
 print("---%s seconds---" % (time.time() - start_time))
 
