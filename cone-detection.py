@@ -52,15 +52,15 @@ for con in foreground_contours:
     if area > 5*box[1]-1080 > 0:
         valid_contours.append(con)
 
-# create hull array for convex hull points
-hull = []
-for con in valid_contours:
-    hull.append(cv2.convexHull(con, True))
-cv2.drawContours(image, hull, -1, (255, 0, 0), 8, 8)
+# # create hull array for convex hull points
+# hull = []
+# for con in valid_contours:
+#     hull.append(cv2.convexHull(con, True))
+# cv2.drawContours(image, hull, -1, (255, 0, 0), 8, 8)
 
 # calculate ratio to search the top part of a cone
 cones = []
-for con in hull:
+for con in valid_contours:
     box = cv2.boundingRect(con)
     ratio = box[2] / box[3]
     if 0.6 < ratio < 0.8:
@@ -76,7 +76,7 @@ for cone in cones:
     possible_box = [0, 0, 0, 0]
     possible_con = [[[0]]]
     area_top = cv2.contourArea(cone.upper_con)
-    for con in hull:
+    for con in valid_contours:
         bounding_box = cv2.boundingRect(con)
         area_bottom = cv2.contourArea(con)
         # bounding box is to the left and below
