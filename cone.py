@@ -101,9 +101,9 @@ class Cone(object):
         # with overall height
         height = self.lower_box[1] + self.lower_box[3] - self.upper_box[1]
         self.overall_height = (2 * 220) / height  # calibrated for 2m distance
-        print("distance with overall height:   ", self.overall_height, "m")
+        # print("distance with overall height:   ", self.overall_height, "m")
         # with side length
         side = np.sqrt((self.lower_right_top[0] - self.upper_right_top[0]) ** 2
                        + (self.lower_right_top[1] - self.upper_right_top[1]) ** 2)
         self.top_part_height = 280 / side  # calibrated for 2m distance
-        print("distance with side length: %2.3f m" % self.top_part_height)
+        # print("distance with side length: %2.3f m" % self.top_part_height)

@@ -1,0 +1,3 @@
+/home/ben/Documents/Studium/6Semester/Projekt/stereo_camera/C-Code/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/ben/Documents/Studium/6Semester/Projekt/stereo_camera/C-Code/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/ben/Documents/Studium/6Semester/Projekt/stereo_camera/C-Code/cmake-build-debug/CMakeFiles/test_cv.dir
